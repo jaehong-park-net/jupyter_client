@@ -12,6 +12,10 @@ from typing import Optional
 from traitlets.log import get_logger  # type: ignore
 
 
+def preexec_fn():
+    os.setgid(100)
+    os.setuid(1000)
+
 def launch_kernel(
     cmd: List[str],
     stdin: Optional[int] = None,
@@ -154,7 +158,7 @@ def launch_kernel(
     try:
         # Allow to use ~/ in the command or its arguments
         cmd = [os.path.expanduser(s) for s in cmd]
-        proc = Popen(cmd, **kwargs)
+        proc = Popen(cmd, preexec_fn=preexec_fn, **kwargs)
     except Exception as ex:
         try:
             msg = "Failed to run command:\n{}\n" "    PATH={!r}\n" "    with kwargs:\n{!r}\n"
